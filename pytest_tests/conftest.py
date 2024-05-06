@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from wallet_app.wallet import Wallet
+from wallet import Wallet
 
 
 @pytest.fixture(autouse=True)

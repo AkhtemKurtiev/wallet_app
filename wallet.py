@@ -2,8 +2,8 @@ from datetime import datetime
 import json
 from pprint import pprint
 
-from wallet_app.validations import (event_validation, number_validation,
-                                    search_event_validation)
+from validations import (event_validation, number_validation,
+                         search_event_validation)
 
 
 with open('wallet.json', 'w+', encoding='utf-8') as file:
@@ -184,6 +184,7 @@ def main():
 
                 amount, category, about = input().split(' ')
                 event_validation(number=None, amount=amount, category=category)
+
                 person.add_event(int(amount), int(category), about)
 
             elif action == '6':
@@ -197,6 +198,7 @@ def main():
                 number, amount, category, about = input().split(' ')
                 event_validation(number=number, amount=amount,
                                  category=category)
+
                 person.update_event(number, int(amount), int(category), about)
 
             elif action == '7':
@@ -211,10 +213,13 @@ def main():
 
                 parameter, value = input().split(' ')
                 search_event_validation(parameter)
+
                 person.search_event(parameter, value)
 
         except KeyError:
             print('Не существующий номер записи!')
+        except ValueError:
+            print('Пожалуйста, вводите все необходимые значения!')
         except Exception as error:
             print(f'Сбой работы программы: ошибка - {error}')
 
