@@ -30,8 +30,9 @@ def event_validation(number: str | None, amount: str,
                               или 1 - доход""")
 
 
-def search_event_validation(parameter: str, value: str):
+def search_event_validation(parameter: str) -> None:
     parameters = ['Дата', 'Категория', 'Сумма', 'Описание']
+    parameter = parameter.capitalize()
     if parameter not in parameters:
         raise NotValidParameter("""Такого парметра не существует,
                                 пожалуйста используйте следующие параметры
