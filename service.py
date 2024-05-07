@@ -10,7 +10,8 @@ def number_isdigit(number: str, text: str) -> None:
         raise NotNumberValue(text)
 
 
-def account_recovery(file_name) -> tuple:
+def account_recovery(file_name) -> tuple[int, int, int]:
+    """Восстанавливает данные пользователя после возобновления работы."""
     with open(file_name, 'r', encoding='utf8') as file:
         data: dict[str, dict[str, Union[int, Any]]] = json.load(file)
     income: int = 0

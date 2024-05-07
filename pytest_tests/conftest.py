@@ -23,19 +23,19 @@ def clean_wallet_after_test():
 
 @pytest.fixture
 def wallet():
-    """Фикстура создаёт экземпяр класса Wallet"""
+    """Фикстура создаёт экземпяр класса Wallet."""
     return Wallet(0, 0, 0, 'wallet_test.json')
 
 
 @pytest.fixture
 def event(wallet):
-    """Фикстура создаёт запись экземпляра Wallet"""
+    """Фикстура создаёт запись экземпляра Wallet."""
     wallet.add_event(100, 1, 'Тест')
 
 
 @pytest.fixture
 def events(wallet):
-    """Фикстура создаёт записи экземпляра Wallet"""
+    """Фикстура создаёт записи экземпляра Wallet."""
     wallet.add_event(100, 1, 'Тест')
     wallet.add_event(400, 1, 'Тест3')
     wallet.add_event(500, 0, 'Тест5')
