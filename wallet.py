@@ -4,8 +4,8 @@ from pprint import pprint
 from typing import Union
 
 from service import account_recovery
-from validations import (event_validation, number_validation,
-                         search_event_validation)
+from validations import (event_validation, file_check_validation,
+                         number_validation, search_event_validation)
 
 
 class Wallet():
@@ -180,6 +180,7 @@ class Wallet():
 def main():
     """Логика работы приложения Кошелёк."""
     file_name = 'wallet.json'
+    file_check_validation('wallet.json')
     money, income, expenses = account_recovery(file_name)
     person = Wallet(money, income, expenses, file_name)
 

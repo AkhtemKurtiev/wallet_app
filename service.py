@@ -27,3 +27,18 @@ def account_recovery(file_name) -> tuple[int, int, int]:
     money = income - expenses
 
     return money, income, expenses
+
+
+def create_file_json(file_name: str) -> None:
+    """Создаёт файл file_name.json."""
+    with open(file_name, 'w') as file:
+        json.dump({}, file, ensure_ascii=False)
+
+
+def empty_file_json(file_name: str) -> None:
+    """Если файл file_name.json пуст, добавляет в него: {}"""
+    with open(file_name, 'r+') as file:
+        try:
+            json.load(file)
+        except Exception:
+            json.dump({}, file, ensure_ascii=False)

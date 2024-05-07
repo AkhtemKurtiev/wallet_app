@@ -1,6 +1,8 @@
+import os
+
 from constants import CATEGORIES, PARAMETERS
 from exeptions import NotValidDate, NotValidNumber, NotValidParameter
-from service import number_isdigit
+from service import create_file_json, empty_file_json, number_isdigit
 
 
 def number_validation(number: str) -> str:
@@ -28,6 +30,7 @@ def event_validation(number: str | None, amount: str,
 
 
 def search_event_validation(parameter: str, value: str) -> None:
+    """Валидатор данных параметров поиска."""
     parameter = parameter.capitalize()
     value = value.capitalize()
     if parameter not in PARAMETERS:
@@ -45,3 +48,13 @@ def search_event_validation(parameter: str, value: str) -> None:
                                 Доход или Расход"""))
     if parameter == 'Сумма':
         number_isdigit(value, 'Пожалуйста, вводите для суммы - число')
+
+
+def file_check_validation(file_name: str) -> None:
+    """Проверка: существует ли файл file_name.json,
+        если существует - не пуст ли он.
+    """
+    if not os.path.exists(file_name):
+        create_file_json(file_name)
+    else:
+        empty_file_json(file_name)
