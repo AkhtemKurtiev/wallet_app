@@ -8,3 +8,7 @@ class NotValidNumber(Exception):
 
 class NotValidParameter(Exception):
     """Исключение: такого параметра не существует."""
+
+
+class NotValidDate(Exception):
+    """Исключение: не валидная дата."""

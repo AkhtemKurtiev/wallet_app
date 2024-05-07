@@ -44,8 +44,19 @@ def test_add_event(wallet, event, capsys):
     assert wallet.expenses == 0
 
 
+def test_clean_event(wallet, event, capsys):
+    wallet.clean_wallet()
+    wallet.show_events()
+    text = capsys.readouterr()
+    data = '{}'
+    assert data in text.out
+    assert wallet.income == 0
+    assert wallet.money == 0
+    assert wallet.expenses == 0
+
+
 def test_update_event_same_status(wallet, event, capsys):
-    """Тест метода update_event."""
+    """Тест метода update_event: статус записи не изменяется."""
     wallet.update_event('1', 200, 1, 'Тест2')
     wallet.show_events()
     text = capsys.readouterr()
@@ -61,7 +72,7 @@ def test_update_event_same_status(wallet, event, capsys):
 
 
 def test_update_event_changed_status(wallet, event, capsys):
-    """Тест метода update_event."""
+    """Тест метода update_event: статус записи изменяется."""
     wallet.update_event('1', 200, 0, 'Тест2')
     wallet.show_events()
     text = capsys.readouterr()

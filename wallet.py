@@ -1,23 +1,22 @@
 from datetime import datetime
 import json
 from pprint import pprint
+from typing import Union
 
+from service import account_recovery
 from validations import (event_validation, number_validation,
                          search_event_validation)
-
-
-with open('wallet.json', 'w+', encoding='utf-8') as file:
-    big_data: dict = {}
-    json.dump(big_data, file)
 
 
 class Wallet():
     """Класс, описывающий приложение Кошелёк."""
 
-    def __init__(self, money: int, income: int, expenses: int) -> None:
+    def __init__(self, money: int, income: int,
+                 expenses: int, file_name: str) -> None:
         self.money: int = money
         self.income: int = income
         self.expenses: int = expenses
+        self.file_name: str = file_name
 
     def show_money(self) -> None:
         """Показывает баланс.
@@ -40,14 +39,47 @@ class Wallet():
         """
         print(f'Расходы {self.expenses}')
 
+    def _read_json(self) -> dict:
+        """Приватный метод.
+                Выгружет из file.json данные о записях.
+                Вызывается в других методах класса.
+            Возвращает содержимое файла file.json.
+            Пример:
+                main_data: dict = self._read_json()
+        """
+        with open(self.file_name, 'r+', encoding='utf-8') as file:
+            main_data: dict[str, dict[str, Union[str, int]]] = json.load(file)
+        return main_data
+
+    def _write_json(self, main_data) -> None:
+        """Приватный метод.
+                Записывает в file.json данные о записях.
+                Вызывается в других методах класса.
+            Пример:
+                self._write_json({})
+        """
+        with open(self.file_name, 'r+', encoding='utf-8') as file:
+            file.seek(0)
+            file.truncate()
+            json.dump(main_data, file, ensure_ascii=False)
+
+    def clean_wallet(self):
+        """Удаляет все записи.
+        Пример вызова:
+            person.clean_wallet().
+        """
+        self._write_json({})
+        self.money = 0
+        self.income = 0
+        self.expenses = 0
+
     def show_events(self) -> None:
         """Показывает весь список записей.
         Пример вызова:
             person.show_events().
         """
-        with open('wallet.json', 'r+', encoding='utf-8') as file:
-            main_data = json.load(file)
-            pprint(main_data)
+        main_data: dict[str, dict[str, Union[str, int]]] = self._read_json()
+        pprint(main_data)
 
     def add_event(self, amount: int, category: int, about: str) -> None:
         """Добавление записи.
@@ -63,19 +95,17 @@ class Wallet():
         self.income += amount if category else 0
         self.money -= amount if not category else -amount
 
-        data: dict = {
+        data: dict[str, Union[str, int]] = {
             'Дата': datetime.today().date().isoformat(),
             'Категория': category_name,
             'Сумма': amount,
             'Описание': about
         }
 
-        with open('wallet.json', 'r+', encoding='utf-8') as file:
-            main_data: dict[str, dict] = json.load(file)
-            index: int = max(map(int, main_data.keys()), default=0) + 1
-            main_data[str(index)] = data
-            file.seek(0)
-            json.dump(main_data, file, ensure_ascii=False)
+        main_data: dict[str, dict[str, Union[str, int]]] = self._read_json()
+        index: int = max(map(int, main_data.keys()), default=0) + 1
+        main_data[str(index)] = data
+        self._write_json(main_data)
 
     def update_event(self, number: str, amount: int,
                      category: int, about: str) -> None:
@@ -90,37 +120,36 @@ class Wallet():
         """
         category_name: str = 'Доход' if category else 'Расход'
 
-        with open('wallet.json', 'r+', encoding='utf-8') as file:
-            main_data: dict[str, dict] = json.load(file)
-            old_data: dict = main_data[number]
+        main_data: dict[str, dict[str, Union[str, int]]] = self._read_json()
+        old_data: dict = main_data[number]
 
-            if old_data['Категория'] != category_name:
-                if category_name == 'Доход':
-                    self.expenses -= old_data['Сумма']
-                    self.income += amount
-                    self.money += amount + old_data['Сумма']
-                else:
-                    self.income -= old_data['Сумма']
-                    self.expenses += amount
-                    self.money -= old_data['Сумма'] + amount
+        if old_data['Категория'] != category_name:
+            if category_name == 'Доход':
+                self.expenses -= old_data['Сумма']
+                self.income += amount
+                self.money += amount + old_data['Сумма']
             else:
-                if category_name == 'Доход':
-                    self.income += amount - old_data['Сумма']
-                    self.money += amount - old_data['Сумма']
-                else:
-                    self.expenses += amount - old_data['Сумма']
-                    self.money += old_data['Сумма'] - amount
+                self.income -= old_data['Сумма']
+                self.expenses += amount
+                self.money -= old_data['Сумма'] + amount
+        else:
+            if category_name == 'Доход':
+                self.income += amount - old_data['Сумма']
+                self.money += amount - old_data['Сумма']
+            else:
+                self.expenses += amount - old_data['Сумма']
+                self.money += old_data['Сумма'] - amount
 
-            new_data: dict = {
-                'Дата': old_data['Дата'],
-                'Категория': category_name,
-                'Сумма': amount or old_data['Сумма'],
-                'Описание': about or old_data['Описание']
-            }
-            main_data[number] = new_data
-            file.seek(0)
-            file.truncate()
-            json.dump(main_data, file, ensure_ascii=False)
+        new_data: dict[str, Union[str, int]] = {
+            'Дата': old_data['Дата'],
+            'Категория': category_name,
+            'Сумма': amount or old_data['Сумма'],
+            'Описание': about or old_data['Описание']
+        }
+
+        main_data[number] = new_data
+
+        self._write_json(main_data)
 
     def search_event(self, parameter: str, value: str) -> None:
         """Поиск записей по параметрам.
@@ -133,21 +162,26 @@ class Wallet():
         Пример вызова:
             person.search_event('Категория', 'ДоХОд').
         """
-        with open('wallet.json', 'r+', encoding='utf-8') as file:
-            main_data: dict[str, dict] = json.load(file)
-            parameter = parameter.capitalize()
-            value = value.capitalize()
-            search_events = ([main_data[str(i+1)]
-                             for i in range(len(main_data))
-                             if main_data[str(i+1)][parameter] == value]
-                             )
-            for event in search_events:
-                print(event)
+        main_data: dict[str, dict[str, Union[str, int]]] = self._read_json()
+
+        parameter = parameter.capitalize()
+        value = value.capitalize()
+        search_events: list[Union[dict[str, Union[str, int]], None]] = (
+            [main_data[str(i+1)]
+             for i in range(len(main_data))
+             if main_data[str(i+1)][parameter] == value]
+        )
+        if not search_events:
+            print('Ничего не найдено')
+        for event in search_events:
+            print(event)
 
 
 def main():
     """Логика работы приложения Кошелёк."""
-    person = Wallet(0, 0, 0)
+    file_name = 'wallet.json'
+    money, income, expenses = account_recovery(file_name)
+    person = Wallet(money, income, expenses, file_name)
 
     while True:
         try:
@@ -159,7 +193,8 @@ def main():
                             4: Показать весь список записей
                             5: Добавить запись,
                             6: Редактировать запись,
-                            7: Поиск по записям
+                            7: Поиск по записям,
+                            8: Удалить все записи
                 """))
             action = number_validation(input())
 
@@ -212,9 +247,16 @@ def main():
                     """)
 
                 parameter, value = input().split(' ')
-                search_event_validation(parameter)
+                search_event_validation(parameter, value)
 
                 person.search_event(parameter, value)
+
+            elif action == '8':
+                print("""Вы уверены, что хотите удалить записи?
+                            Да - если Да, иначе - нет""")
+                answer = input()
+                if answer == 'Да':
+                    person.clean_wallet()
 
         except KeyError:
             print('Не существующий номер записи!')

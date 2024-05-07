@@ -8,7 +8,7 @@ from wallet import Wallet
 @pytest.fixture(autouse=True)
 def clean_wallet_json():
     """Фикстура отчищает json-файл перед тестами."""
-    with open('wallet.json', 'w+', encoding='utf-8') as file:
+    with open('wallet_test.json', 'w+', encoding='utf-8') as file:
         test_data = {}
         json.dump(test_data, file)
 
@@ -17,14 +17,14 @@ def clean_wallet_json():
 def clean_wallet_after_test():
     """Фикстура отчищает json-файл после тестов."""
     yield
-    with open('wallet.json', 'w', encoding='utf-8') as file:
+    with open('wallet_test.json', 'w', encoding='utf-8') as file:
         json.dump({}, file)
 
 
 @pytest.fixture
 def wallet():
     """Фикстура создаёт экземпяр класса Wallet"""
-    return Wallet(0, 0, 0)
+    return Wallet(0, 0, 0, 'wallet_test.json')
 
 
 @pytest.fixture
