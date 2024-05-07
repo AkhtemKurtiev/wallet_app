@@ -259,6 +259,7 @@ def main():
                 answer = input()
                 if answer == 'Да':
                     person.clean_wallet()
+                    print('Записи удалены.')
 
         except KeyError:
             print('Не существующий номер записи!')
