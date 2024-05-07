@@ -143,8 +143,8 @@ class Wallet():
         new_data: dict[str, Union[str, int]] = {
             'Дата': old_data['Дата'],
             'Категория': category_name,
-            'Сумма': amount or old_data['Сумма'],
-            'Описание': about or old_data['Описание']
+            'Сумма': amount,
+            'Описание': about
         }
 
         main_data[number] = new_data
@@ -221,6 +221,7 @@ def main():
                 event_validation(number=None, amount=amount, category=category)
 
                 person.add_event(int(amount), int(category), about)
+                print('Запись добавлена.')
 
             elif action == '6':
                 person.show_events()
@@ -235,6 +236,7 @@ def main():
                                  category=category)
 
                 person.update_event(number, int(amount), int(category), about)
+                print('Изменения сохранены.')
 
             elif action == '7':
                 print("""

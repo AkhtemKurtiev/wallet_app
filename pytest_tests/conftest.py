@@ -13,7 +13,7 @@ def clean_wallet_json():
         json.dump(test_data, file)
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(autouse=True)
 def clean_wallet_after_test():
     """Фикстура отчищает json-файл после тестов."""
     yield

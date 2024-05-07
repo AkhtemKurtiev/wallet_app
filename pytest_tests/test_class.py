@@ -45,6 +45,7 @@ def test_add_event(wallet, event, capsys):
 
 
 def test_clean_event(wallet, event, capsys):
+    """Тест метода clean_wallet."""
     wallet.clean_wallet()
     wallet.show_events()
     text = capsys.readouterr()
